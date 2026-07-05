@@ -6,7 +6,20 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		4D1001562EDC459F00290463 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D1001552EDC459F00290463 /* WidgetKit.framework */; };
+		4D1001582EDC459F00290463 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D1001572EDC459F00290463 /* SwiftUI.framework */; };
+		4D1001652EDC45A100290463 /* DailyGoalsWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 4D1001532EDC459E00290463 /* DailyGoalsWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
+		4D1001632EDC45A100290463 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4DCEA20B2ED08E2800F3C588 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 4D1001522EDC459E00290463;
+			remoteInfo = DailyGoalsWidgetExtension;
+		};
 		4DCEA2252ED08E2B00F3C588 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 4DCEA20B2ED08E2800F3C588 /* Project object */;
@@ -23,13 +36,50 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		4D10016A2EDC45A100290463 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				4D1001652EDC45A100290463 /* DailyGoalsWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		4D1001532EDC459E00290463 /* DailyGoalsWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = DailyGoalsWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		4D1001552EDC459F00290463 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = /System/Library/Frameworks/WidgetKit.framework; sourceTree = "<absolute>"; };
+		4D1001572EDC459F00290463 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = /System/Library/Frameworks/SwiftUI.framework; sourceTree = "<absolute>"; };
+		4D10016B2EDC462A00290463 /* DailyGoalsWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = DailyGoalsWidgetExtension.entitlements; sourceTree = "<group>"; };
 		4DCEA2132ED08E2800F3C588 /* DailyGoals.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DailyGoals.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4DCEA2242ED08E2B00F3C588 /* DailyGoalsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DailyGoalsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		4DCEA22E2ED08E2B00F3C588 /* DailyGoalsUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DailyGoalsUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		4D1001692EDC45A100290463 /* Exceptions for "DailyGoalsWidget" folder in "DailyGoalsWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 4D1001522EDC459E00290463 /* DailyGoalsWidgetExtension */;
+		};
+		4D10016F2EDC46C900290463 /* Exceptions for "DailyGoals" folder in "DailyGoalsWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Goal.swift,
+				GoalColors.swift,
+				GoalDataManager.swift,
+				GoalIntent.swift,
+				GoalStore.swift,
+				NotificationManager.swift,
+			);
+			target = 4D1001522EDC459E00290463 /* DailyGoalsWidgetExtension */;
+		};
 		4DCEA2362ED08E2B00F3C588 /* Exceptions for "DailyGoals" folder in "DailyGoals" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -40,10 +90,19 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		4D1001592EDC459F00290463 /* DailyGoalsWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				4D1001692EDC45A100290463 /* Exceptions for "DailyGoalsWidget" folder in "DailyGoalsWidgetExtension" target */,
+			);
+			path = DailyGoalsWidget;
+			sourceTree = "<group>";
+		};
 		4DCEA2152ED08E2800F3C588 /* DailyGoals */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				4DCEA2362ED08E2B00F3C588 /* Exceptions for "DailyGoals" folder in "DailyGoals" target */,
+				4D10016F2EDC46C900290463 /* Exceptions for "DailyGoals" folder in "DailyGoalsWidgetExtension" target */,
 			);
 			path = DailyGoals;
 			sourceTree = "<group>";
@@ -61,6 +120,15 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		4D1001502EDC459E00290463 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				4D1001582EDC459F00290463 /* SwiftUI.framework in Frameworks */,
+				4D1001562EDC459F00290463 /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4DCEA2102ED08E2800F3C588 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -85,12 +153,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4D1001542EDC459F00290463 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				4D1001552EDC459F00290463 /* WidgetKit.framework */,
+				4D1001572EDC459F00290463 /* SwiftUI.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		4DCEA20A2ED08E2800F3C588 = {
 			isa = PBXGroup;
 			children = (
+				4D10016B2EDC462A00290463 /* DailyGoalsWidgetExtension.entitlements */,
 				4DCEA2152ED08E2800F3C588 /* DailyGoals */,
 				4DCEA2272ED08E2B00F3C588 /* DailyGoalsTests */,
 				4DCEA2312ED08E2B00F3C588 /* DailyGoalsUITests */,
+				4D1001592EDC459F00290463 /* DailyGoalsWidget */,
+				4D1001542EDC459F00290463 /* Frameworks */,
 				4DCEA2142ED08E2800F3C588 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -101,6 +181,7 @@
 				4DCEA2132ED08E2800F3C588 /* DailyGoals.app */,
 				4DCEA2242ED08E2B00F3C588 /* DailyGoalsTests.xctest */,
 				4DCEA22E2ED08E2B00F3C588 /* DailyGoalsUITests.xctest */,
+				4D1001532EDC459E00290463 /* DailyGoalsWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -108,6 +189,28 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		4D1001522EDC459E00290463 /* DailyGoalsWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 4D1001662EDC45A100290463 /* Build configuration list for PBXNativeTarget "DailyGoalsWidgetExtension" */;
+			buildPhases = (
+				4D10014F2EDC459E00290463 /* Sources */,
+				4D1001502EDC459E00290463 /* Frameworks */,
+				4D1001512EDC459E00290463 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				4D1001592EDC459F00290463 /* DailyGoalsWidget */,
+			);
+			name = DailyGoalsWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = DailyGoalsWidgetExtension;
+			productReference = 4D1001532EDC459E00290463 /* DailyGoalsWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		4DCEA2122ED08E2800F3C588 /* DailyGoals */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 4DCEA2372ED08E2B00F3C588 /* Build configuration list for PBXNativeTarget "DailyGoals" */;
@@ -115,10 +218,12 @@
 				4DCEA20F2ED08E2800F3C588 /* Sources */,
 				4DCEA2102ED08E2800F3C588 /* Frameworks */,
 				4DCEA2112ED08E2800F3C588 /* Resources */,
+				4D10016A2EDC45A100290463 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				4D1001642EDC45A100290463 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				4DCEA2152ED08E2800F3C588 /* DailyGoals */,
@@ -186,6 +291,9 @@
 				LastSwiftUpdateCheck = 2610;
 				LastUpgradeCheck = 2610;
 				TargetAttributes = {
+					4D1001522EDC459E00290463 = {
+						CreatedOnToolsVersion = 26.1.1;
+					};
 					4DCEA2122ED08E2800F3C588 = {
 						CreatedOnToolsVersion = 26.1.1;
 					};
@@ -216,11 +324,19 @@
 				4DCEA2122ED08E2800F3C588 /* DailyGoals */,
 				4DCEA2232ED08E2B00F3C588 /* DailyGoalsTests */,
 				4DCEA22D2ED08E2B00F3C588 /* DailyGoalsUITests */,
+				4D1001522EDC459E00290463 /* DailyGoalsWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		4D1001512EDC459E00290463 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4DCEA2112ED08E2800F3C588 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -245,6 +361,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		4D10014F2EDC459E00290463 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4DCEA20F2ED08E2800F3C588 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -269,6 +392,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		4D1001642EDC45A100290463 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 4D1001522EDC459E00290463 /* DailyGoalsWidgetExtension */;
+			targetProxy = 4D1001632EDC45A100290463 /* PBXContainerItemProxy */;
+		};
 		4DCEA2262ED08E2B00F3C588 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 4DCEA2122ED08E2800F3C588 /* DailyGoals */;
@@ -282,18 +410,137 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		4D1001672EDC45A100290463 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = DailyGoalsWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2;
+				DEVELOPMENT_TEAM = NPY6AQ753Z;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = NO;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
+				ENABLE_RESOURCE_ACCESS_USB = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = DailyGoalsWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = DailyGoalsWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.6;
+				MARKETING_VERSION = 1.1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.harsh.DailyGoals.DailyGoalsWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = auto;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				XROS_DEPLOYMENT_TARGET = 26.1;
+			};
+			name = Debug;
+		};
+		4D1001682EDC45A100290463 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = DailyGoalsWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 2;
+				DEVELOPMENT_TEAM = NPY6AQ753Z;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = NO;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
+				ENABLE_RESOURCE_ACCESS_USB = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = DailyGoalsWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = DailyGoalsWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 14.6;
+				MARKETING_VERSION = 1.1;
+				PRODUCT_BUNDLE_IDENTIFIER = com.harsh.DailyGoals.DailyGoalsWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = auto;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2,7";
+				XROS_DEPLOYMENT_TARGET = 26.1;
+			};
+			name = Release;
+		};
 		4DCEA2382ED08E2B00F3C588 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = DailyGoals/DailyGoals.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = NPY6AQ753Z;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = NO;
 				ENABLE_PREVIEWS = YES;
-				ENABLE_USER_SELECTED_FILES = readonly;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
+				ENABLE_RESOURCE_ACCESS_USB = NO;
+				ENABLE_USER_SELECTED_FILES = readwrite;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = DailyGoals/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -306,11 +553,11 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 26.1;
-				MARKETING_VERSION = 1.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.6;
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.harsh.DailyGoals;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
@@ -332,13 +579,24 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = DailyGoals/DailyGoals.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = NPY6AQ753Z;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = NO;
 				ENABLE_PREVIEWS = YES;
-				ENABLE_USER_SELECTED_FILES = readonly;
+				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
+				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
+				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
+				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
+				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
+				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
+				ENABLE_RESOURCE_ACCESS_PRINTING = NO;
+				ENABLE_RESOURCE_ACCESS_USB = NO;
+				ENABLE_USER_SELECTED_FILES = readwrite;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = DailyGoals/Info.plist;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -351,11 +609,11 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 26.1;
-				MARKETING_VERSION = 1.0;
+				MACOSX_DEPLOYMENT_TARGET = 14.6;
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.harsh.DailyGoals;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
@@ -593,6 +851,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		4D1001662EDC45A100290463 /* Build configuration list for PBXNativeTarget "DailyGoalsWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				4D1001672EDC45A100290463 /* Debug */,
+				4D1001682EDC45A100290463 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		4DCEA20E2ED08E2800F3C588 /* Build configuration list for PBXProject "DailyGoals" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

@@ -1,3 +1,11 @@
+//
+//  ConfettiGeometryEffect.swift
+//  DailyGoals
+//
+//  Created by harsh selarka on 30/11/2025.
+//
+
+
 import SwiftUI
 
 // A physics-based modifier for particles

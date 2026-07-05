@@ -1,43 +1,70 @@
-//
-//  is.swift
-//  DailyGoals
-//
-//  Created by harsh selarka on 30/11/2025.
-//
-
-
 import Foundation
 import WidgetKit
 
-// This struct is SAFE to use in Widgets, Intents, and the App
 struct GoalDataManager {
-    // Make sure this matches your App Group exactly
-    static let suiteName = "group.com.harshselarka.dailygoals.local" 
+    static let suiteName = "group.com.harsh.DailyGoals"
     static let storageKey = "DailyGoalsStorage"
-    
-    // 1. Load Goals (Safe for Background)
-    static func loadGoals() -> [Goal] {
-        let userDefaults = UserDefaults(suiteName: suiteName) ?? UserDefaults.standard
-        guard let data = userDefaults.data(forKey: storageKey) else { return [] }
-        
-        do {
-            return try JSONDecoder().decode([Goal].self, from: data)
-        } catch {
-            return []
-        }
+    private static let legacyStorageKey = "DailyGoalsStorage"
+
+    /// Whether the App Group container is available (required for widget data sharing).
+    static var isAppGroupAvailable: Bool {
+        UserDefaults(suiteName: suiteName) != nil
     }
-    
-    // 2. Save Goals (Safe for Background)
+
+    /// Loads goals from the shared App Group container, migrating legacy data if needed.
+    static func loadGoals() -> [Goal] {
+        if let shared = UserDefaults(suiteName: suiteName),
+           let goals = decodeGoals(from: shared) {
+            return goals
+        }
+
+        // Main app may have saved to standard UserDefaults before App Group was configured.
+        if let goals = decodeGoals(from: .standard), !goals.isEmpty {
+            if let shared = UserDefaults(suiteName: suiteName) {
+                persist(goals, to: shared)
+                UserDefaults.standard.removeObject(forKey: legacyStorageKey)
+            }
+            return goals
+        }
+
+        return []
+    }
+
+    /// Saves goals to the shared App Group container and refreshes widgets.
     static func saveGoals(_ goals: [Goal]) {
         do {
             let data = try JSONEncoder().encode(goals)
-            if let userDefaults = UserDefaults(suiteName: suiteName) {
-                userDefaults.set(data, forKey: storageKey)
+
+            if let shared = UserDefaults(suiteName: suiteName) {
+                persist(data, to: shared)
+            } else {
+                // Widget cannot read this fallback — App Group must be enabled when sideloading.
+                print("DailyGoals: App Group unavailable — widget will not receive updates.")
+                UserDefaults.standard.set(data, forKey: legacyStorageKey)
             }
-            // Tell Widgets to refresh
+
             WidgetCenter.shared.reloadAllTimelines()
         } catch {
-            print("Error saving goals: \(error)")
+            print("Error saving local goals: \(error)")
         }
+    }
+
+    private static func decodeGoals(from defaults: UserDefaults) -> [Goal]? {
+        guard let data = defaults.data(forKey: storageKey) else { return nil }
+        do {
+            return try JSONDecoder().decode([Goal].self, from: data)
+        } catch {
+            print("Error decoding goals: \(error)")
+            return nil
+        }
+    }
+
+    private static func persist(_ goals: [Goal], to defaults: UserDefaults) {
+        guard let data = try? JSONEncoder().encode(goals) else { return }
+        persist(data, to: defaults)
+    }
+
+    private static func persist(_ data: Data, to defaults: UserDefaults) {
+        defaults.set(data, forKey: storageKey)
     }
 }

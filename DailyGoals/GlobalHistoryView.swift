@@ -1,3 +1,11 @@
+//
+//  GlobalHistoryView.swift
+//  DailyGoals
+//
+//  Created by harsh selarka on 10/12/2025.
+//
+
+
 import SwiftUI
 
 struct GlobalHistoryView: View {
@@ -30,8 +38,11 @@ struct GlobalHistoryView: View {
                     // 2. The Calendar Grid
                     LazyVGrid(columns: columns, spacing: 15) {
                         // Day Names
-                        ForEach(["S","M","T","W","T","F","S"], id: \.self) { day in
-                            Text(day).font(.caption).foregroundStyle(.secondary)
+                        let daySymbols = ["S","M","T","W","T","F","S"]
+                        ForEach(0..<7, id: \.self) { index in
+                            Text(daySymbols[index])
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
                         }
                         
                         // Days

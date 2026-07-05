@@ -58,13 +58,22 @@ struct TaskHistoryView: View {
                 }
             }
             .navigationTitle(goal.name)
+            
+            // --- THE FIX IS HERE ---
+            #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
+            #endif
+            // -----------------------
+            
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Close") { dismiss() }
                 }
             }
         }
+        #if os(macOS)
+        .frame(minWidth: 400, minHeight: 500)
+        #endif
     }
     
     private var goalTypeTarget: Int {

@@ -1,132 +1,290 @@
 import Foundation
+import Combine
+import SwiftUI
+import WidgetKit
+
+#if os(iOS)
+import ActivityKit
+#endif
+
+// Define Attributes for iOS only
+#if os(iOS)
+struct GoalTimerAttributes: ActivityAttributes {
+    public struct ContentState: Codable, Hashable {
+        var goalID: UUID
+        var goalName: String
+        var startTime: Date
+        var colorID: Int
+    }
+}
+#endif
 
 final class GoalStore: ObservableObject {
-    @Published var goals: [Goal] = [] {
-        didSet { save() }
+    // 1. REMOVED 'didSet'. This stops the overwrite loop.
+    @Published var goals: [Goal] = []
+    
+    #if os(iOS)
+    private var currentActivity: Activity<GoalTimerAttributes>?
+    #endif
+    
+    init() {
+        refresh()
     }
 
-    private let storageKey = "DailyGoalsStorage"
+    func refresh() {
+        self.goals = GoalDataManager.loadGoals()
+        self.checkDayChanges()
+        if isMainApp {
+            Task {
+                await NotificationManager.syncNotifications(for: self.goals)
+            }
+        }
+    }
 
-    init() {
-        load()
+    // MARK: - Manual Save Helper
+    private var isMainApp: Bool {
+        Bundle.main.object(forInfoDictionaryKey: "NSExtension") == nil
+    }
+
+    private func save() {
+        Task {
+            GoalDataManager.saveGoals(self.goals)
+            if isMainApp {
+                await NotificationManager.syncNotifications(for: self.goals)
+            }
+        }
+    }
+
+    func updateGoal(_ goal: Goal) {
+        guard let idx = goals.firstIndex(where: { $0.id == goal.id }) else { return }
+        goals[idx] = goal
+        save()
     }
 
     // MARK: - Public API
-
-    func addGoal(name: String, hours: Int, minutes: Int) {
-        let totalSeconds = hours * 3600 + minutes * 60
-        guard totalSeconds > 0 else { return }
-
-        let today = startOfDay(Date())
+    
+    func addGoal(name: String, type: GoalType, targetValue: Int, scheduleType: ScheduleType, specificDays: [Int]?, reminderEnabled: Bool = false, reminderHour: Int? = nil, reminderMinute: Int? = nil) {
+        let totalSeconds = type == .time ? targetValue : 0
+        guard (type == .time && totalSeconds > 0) || (type == .count && targetValue > 0) else { return }
+        
+        let now = Date()
+        let today = startOfDay(now)
+        
+        var schedule = GoalSchedule.everyDay
+        schedule.type = scheduleType
+        switch scheduleType {
+        case .everyDay: break
+        case .alternateDays: schedule.alternateStartDate = today
+        case .specificDays: schedule.specificDays = specificDays?.sorted()
+        }
+        
         let goal = Goal(
             name: name,
-            dailyQuotaSeconds: totalSeconds,
+            type: type,
+            dailyQuotaSeconds: type == .time ? targetValue : 0,
             secondsCompletedToday: 0,
-            lastResetDate: today
+            targetCount: type == .count ? targetValue : 1,
+            currentCount: 0,
+            lastResetDate: today,
+            schedule: schedule,
+            createdDate: now,
+            reminderEnabled: reminderEnabled,
+            reminderHour: reminderHour,
+            reminderMinute: reminderMinute
         )
         goals.append(goal)
+        save() // <--- Manual Save
     }
-
+    
     func deleteGoal(_ goal: Goal) {
+        if isMainApp {
+            NotificationManager.cancelReminder(for: goal.id)
+        }
         goals.removeAll { $0.id == goal.id }
+        save() // <--- Manual Save
     }
-
+    
     func startTimer(for goal: Goal) {
-        guard let idx = goals.firstIndex(of: goal) else { return }
-
+        guard let idx = goals.firstIndex(where: { $0.id == goal.id }), goal.type == .time else { return }
+        
         var g = goals[idx]
         let now = Date()
         let today = startOfDay(now)
-
-        // If we're on a new day since last progress, roll over first
+        
         if startOfDay(g.lastResetDate) < today {
             processDayChange(index: idx, todayStart: today)
             g = goals[idx]
         }
-
-        // Don't start if already completed
-        if displayedSeconds(for: g) >= g.dailyQuotaSeconds {
-            return
-        }
-
-        // If already running, do nothing
+        
         if g.isActiveTimer { return }
-
+        
         g.isActiveTimer = true
-        g.timerStartTimestamp = now
+        g.timerStartTimestamp = Date()
         goals[idx] = g
+        save() // <--- Manual Save
+        
+        #if os(iOS)
+        startLiveActivity(for: g)
+        #endif
     }
-
+    
     func pauseTimer(for goal: Goal) {
-        guard let idx = goals.firstIndex(of: goal) else { return }
-        var g = goals[idx]
-
-        guard g.isActiveTimer, let start = g.timerStartTimestamp else { return }
-
+        guard let idx = goals.firstIndex(where: { $0.id == goal.id }),
+              goals[idx].isActiveTimer,
+              let start = goals[idx].timerStartTimestamp else { return }
+        
         let elapsed = Int(Date().timeIntervalSince(start))
-        g.secondsCompletedToday = min(
-            g.dailyQuotaSeconds,
-            g.secondsCompletedToday + max(0, elapsed)
-        )
-
-        g.isActiveTimer = false
-        g.timerStartTimestamp = nil
-        goals[idx] = g
-
-        maybeGrantReward(index: idx)
+        goals[idx].secondsCompletedToday += max(0, elapsed)
+        goals[idx].isActiveTimer = false
+        goals[idx].timerStartTimestamp = nil
+        
+        if goals[idx].secondsCompletedToday >= goals[idx].dailyQuotaSeconds {
+            maybeGrantReward(index: idx)
+        }
+        
+        goals[idx] = goals[idx] // Update published property
+        save() // <--- Manual Save
+        
+        #if os(iOS)
+        endLiveActivity()
+        #endif
     }
-
-    /// For UI: includes live running time without mutating state
+    
+    func incrementCount(for goal: Goal, by amount: Int) {
+        guard let idx = goals.firstIndex(where: { $0.id == goal.id }) else { return }
+        
+        var g = goals[idx]
+        let now = Date()
+        let today = startOfDay(now)
+        
+        if startOfDay(g.lastResetDate) < today {
+            processDayChange(index: idx, todayStart: today)
+            g = goals[idx]
+        }
+        
+        if g.type == .count {
+            g.currentCount = max(0, g.currentCount + amount)
+            
+            if g.currentCount >= g.targetCount && !g.hasEarnedRewardToday {
+                g.rewardPoints += 10
+                g.streak += 1
+                g.hasEarnedRewardToday = true
+            }
+        }
+        
+        goals[idx] = g
+        save() // <--- Manual Save
+    }
+    
     func displayedSeconds(for goal: Goal) -> Int {
+        guard goal.type == .time else { return 0 }
+        
         if goal.isActiveTimer, let start = goal.timerStartTimestamp {
             let elapsed = Int(Date().timeIntervalSince(start))
-            let total = goal.secondsCompletedToday + max(0, elapsed)
-            return min(total, goal.dailyQuotaSeconds)
+            return goal.secondsCompletedToday + max(elapsed, 0)
         } else {
-            return min(goal.secondsCompletedToday, goal.dailyQuotaSeconds)
+            return goal.secondsCompletedToday
         }
     }
-
-    /// Called every second from the UI
+    
     func tick() {
+        // 1. Sync check
+        // This READS from disk. Since we removed didSet, this will NOT trigger a write.
+        // This is the key fix.
+        let loadedGoals = GoalDataManager.loadGoals()
+        if loadedGoals != self.goals {
+            self.goals = loadedGoals
+        }
+        
+        // 2. Timer Logic
+        if goals.contains(where: { $0.isActiveTimer }) {
+            objectWillChange.send()
+        }
+        
+        // 3. Reset Check
+        checkDayChanges()
+    }
+    
+    // NEW: Centralized Day Change Checker
+    private func checkDayChanges() {
         let now = Date()
-        let todayStart = startOfDay(now)
-
+        let todayStart = Calendar.current.startOfDay(for: now)
+        
+        var changed = false
         for idx in goals.indices {
-            // Handle day rollover (rewards / punishments + reset)
-            if startOfDay(goals[idx].lastResetDate) < todayStart {
+            if Calendar.current.startOfDay(for: goals[idx].lastResetDate) < todayStart {
+                // processDayChange saves internally now, but let's be safe
                 processDayChange(index: idx, todayStart: todayStart)
-            }
-
-            // Auto-stop timers when quota reached
-            if goals[idx].isActiveTimer, let start = goals[idx].timerStartTimestamp {
-                let elapsed = Int(now.timeIntervalSince(start))
-                let total = goals[idx].secondsCompletedToday + max(0, elapsed)
-
-                if total >= goals[idx].dailyQuotaSeconds {
-                    var g = goals[idx]
-                    g.secondsCompletedToday = g.dailyQuotaSeconds
-                    g.isActiveTimer = false
-                    g.timerStartTimestamp = nil
-                    goals[idx] = g
-                    maybeGrantReward(index: idx)
-                }
+                changed = true
             }
         }
+        if changed { save() }
     }
+
+    func summary() -> (percentage: Double, progressLabel: String) {
+        var totalProgress: Double = 0
+        let count = Double(goals.count)
+        guard count > 0 else { return (0, "0/0") }
+        
+        var completedGoals = 0
+        for g in goals {
+            if g.type == .time {
+                let active = displayedSeconds(for: g)
+                let target = max(1, g.dailyQuotaSeconds)
+                let p = Double(active) / Double(target)
+                totalProgress += p
+                if active >= target { completedGoals += 1 }
+            } else {
+                let p = Double(g.currentCount) / Double(g.targetCount)
+                totalProgress += p
+                if g.currentCount >= g.targetCount { completedGoals += 1 }
+            }
+        }
+        
+        let overallPercent = totalProgress / count
+        return (overallPercent, "\(completedGoals)/\(Int(count)) goals")
+    }
+    
+    // MARK: - iOS Live Activity Helpers
+    #if os(iOS)
+    private func startLiveActivity(for goal: Goal) {
+        guard ActivityAuthorizationInfo().areActivitiesEnabled else { return }
+        
+        let attributes = GoalTimerAttributes()
+        let state = GoalTimerAttributes.ContentState(
+            goalID: goal.id,
+            goalName: goal.name,
+            startTime: Date(),
+            colorID: goal.colorID
+        )
+        
+        do {
+            currentActivity = try Activity.request(
+                attributes: attributes,
+                content: .init(state: state, staleDate: nil)
+            )
+        } catch {
+            print("Error starting Live Activity: \(error)")
+        }
+    }
+    
+    private func endLiveActivity() {
+        Task {
+            await currentActivity?.end(dismissalPolicy: .immediate)
+            currentActivity = nil
+        }
+    }
+    #endif
 
     // MARK: - Private helpers
-
     private func startOfDay(_ date: Date) -> Date {
         Calendar.current.startOfDay(for: date)
     }
-
-    /// Handle end-of-day: reward/punish and reset counters
+    
     private func processDayChange(index: Int, todayStart: Date) {
         var g = goals[index]
-
-        // Finalise any running timer, using midnight as cutoff
-        if g.isActiveTimer, let start = g.timerStartTimestamp {
+        
+        if g.type == .time, g.isActiveTimer, let start = g.timerStartTimestamp {
             let elapsed = Int(todayStart.timeIntervalSince(start))
             g.secondsCompletedToday = min(
                 g.dailyQuotaSeconds,
@@ -135,67 +293,54 @@ final class GoalStore: ObservableObject {
             g.isActiveTimer = false
             g.timerStartTimestamp = nil
         }
+        
+        // Save History
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        let dateKey = formatter.string(from: g.lastResetDate)
+        
+        let val = (g.type == .time) ? g.secondsCompletedToday : g.currentCount
+        if val > 0 { g.history[dateKey] = val }
 
-        let completedYesterday = g.secondsCompletedToday >= g.dailyQuotaSeconds
-
+        let completedYesterday: Bool
+        if g.type == .time {
+            completedYesterday = g.secondsCompletedToday >= g.dailyQuotaSeconds
+        } else {
+            completedYesterday = g.currentCount >= g.targetCount
+        }
+        
         if completedYesterday {
-            // If they never got their XP for yesterday, grant it now
             if !g.hasEarnedRewardToday {
-                let reward = max(1, g.dailyQuotaSeconds / 60)
-                g.rewardPoints += reward
+                g.rewardPoints += 10
                 g.streak += 1
                 g.hasEarnedRewardToday = true
             }
         } else {
-            // Punishment: lose some points + streak reset
             g.rewardPoints = max(0, g.rewardPoints - 10)
             g.streak = 0
         }
-
-        // New day reset
+        
         g.secondsCompletedToday = 0
+        g.currentCount = 0
         g.lastResetDate = todayStart
-        g.hasEarnedRewardToday = false   // for the *new* day
-
+        g.hasEarnedRewardToday = false
+        
         goals[index] = g
+        // Note: No save() call here, caller handles it to batch updates
     }
-
+    
     private func maybeGrantReward(index: Int) {
         var g = goals[index]
         let total = displayedSeconds(for: g)
-
+        
         guard total >= g.dailyQuotaSeconds, !g.hasEarnedRewardToday else { return }
-
-        let reward = max(1, g.dailyQuotaSeconds / 60) // 1 XP per min, min 1
+        
+        let reward = max(1, g.dailyQuotaSeconds / 60)
         g.rewardPoints += reward
         g.streak += 1
         g.hasEarnedRewardToday = true
-
+        
         goals[index] = g
-    }
-
-    // MARK: - Persistence
-
-    private func save() {
-        do {
-            let data = try JSONEncoder().encode(goals)
-            UserDefaults.standard.set(data, forKey: storageKey)
-        } catch {
-            print("Failed to save goals: \(error)")
-        }
-    }
-
-    private func load() {
-        guard let data = UserDefaults.standard.data(forKey: storageKey) else {
-            goals = []
-            return
-        }
-
-        do {
-            goals = try JSONDecoder().decode([Goal].self, from: data)
-        } catch {
-            print("Failed to load goals: \(error)")
-            goals = []
-        }
+        save() // <--- Manual Save
     }
 }

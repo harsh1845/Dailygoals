@@ -1,3 +1,11 @@
+//
+//  EditGoalView.swift
+//  DailyGoals
+//
+//  Created by harsh selarka on 30/11/2025.
+//
+
+
 import SwiftUI
 
 struct EditGoalView: View {
@@ -15,6 +23,9 @@ struct EditGoalView: View {
     @State private var targetMinutes: String = "0"
     @State private var currentHours: String = "0"
     @State private var currentMinutes: String = "0"
+
+    @State private var reminderEnabled: Bool = false
+    @State private var reminderTime: Date = Date()
     
     var body: some View {
         NavigationStack {
@@ -73,6 +84,18 @@ struct EditGoalView: View {
                             }
                         }
                         .listRowBackground(Rectangle().fill(Material.thin))
+
+                        Section("Reminder") {
+                            Toggle("Daily notification", isOn: $reminderEnabled)
+                            if reminderEnabled {
+                                DatePicker(
+                                    "Remind me at",
+                                    selection: $reminderTime,
+                                    displayedComponents: .hourAndMinute
+                                )
+                            }
+                        }
+                        .listRowBackground(Rectangle().fill(Material.thin))
                         
                         Section {
                             Button("Delete Goal", role: .destructive) {
@@ -99,14 +122,19 @@ struct EditGoalView: View {
                             currentHours = String(goal.secondsCompletedToday / 3600)
                             currentMinutes = String((goal.secondsCompletedToday % 3600) / 60)
                         }
+
+                        reminderEnabled = goal.reminderEnabled
+                        reminderTime = goal.reminderDate
                     }
                 } else {
                     Text("Goal not found")
                 }
             }
             .navigationTitle("Edit Goal")
+            #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(.hidden, for: .navigationBar)
+            #endif
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
@@ -146,8 +174,12 @@ struct EditGoalView: View {
             let cM = Int(currentMinutes) ?? 0
             updatedGoal.secondsCompletedToday = (cH * 3600) + (cM * 60)
         }
+
+        let timeComponents = Calendar.current.dateComponents([.hour, .minute], from: reminderTime)
+        updatedGoal.reminderEnabled = reminderEnabled
+        updatedGoal.reminderHour = reminderEnabled ? timeComponents.hour : nil
+        updatedGoal.reminderMinute = reminderEnabled ? timeComponents.minute : nil
         
-        // Push update to store
-        store.goals[index] = updatedGoal
+        store.updateGoal(updatedGoal)
     }
 }

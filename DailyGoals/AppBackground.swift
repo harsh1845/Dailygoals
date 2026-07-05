@@ -1,3 +1,11 @@
+//
+//  AppBackground.swift
+//  DailyGoals
+//
+//  Created by harsh selarka on 30/11/2025.
+//
+
+
 import SwiftUI
 
 struct AppBackground: View {
@@ -34,7 +42,47 @@ struct AppBackground: View {
         .ignoresSafeArea()
     }
 }
-
-#Preview {
-    AppBackground()
+struct FocusBackground: View {
+    @State private var animate = false
+    
+    var body: some View {
+        ZStack {
+            // 1. Deep Base
+            Color(red: 0.05, green: 0.05, blue: 0.08)
+                .ignoresSafeArea()
+            
+            GeometryReader { proxy in
+                // 2. The Orbs (Removed .blendMode, adjusted opacity for smoothness)
+                
+                // Top-Left: Hot Pink
+                Circle()
+                    .fill(GoalColors.all[4].opacity(0.5)) // slightly higher opacity
+                    .frame(width: 600, height: 600)
+                    .blur(radius: 120) // softer blur
+                    .offset(x: animate ? -100 : -200, y: animate ? -100 : -200)
+                
+                // Bottom-Right: Teal
+                Circle()
+                    .fill(GoalColors.all[7].opacity(0.4))
+                    .frame(width: 500, height: 500)
+                    .blur(radius: 120)
+                    .offset(x: proxy.size.width * 0.4, y: proxy.size.height * 0.4)
+                
+                // Center: Orange ("Focus Core")
+                // FIX: Removed .blendMode(.overlay) which caused the box artifact
+                Circle()
+                    .fill(GoalColors.all[3].opacity(0.4))
+                    .frame(width: 450, height: 450)
+                    .blur(radius: 100)
+                    .offset(x: animate ? 50 : -50, y: animate ? 50 : -50)
+            }
+        }
+        .drawingGroup() // Keeps performance high
+        .ignoresSafeArea()
+        .onAppear {
+            withAnimation(.easeInOut(duration: 7).repeatForever(autoreverses: true)) {
+                animate.toggle()
+            }
+        }
+    }
 }

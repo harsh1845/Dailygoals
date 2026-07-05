@@ -1,3 +1,11 @@
+//
+//  GoalColors.swift
+//  DailyGoals
+//
+//  Created by harsh selarka on 22/11/2025.
+//
+
+
 import SwiftUI
 
 struct GoalColors {
@@ -11,4 +19,12 @@ struct GoalColors {
         Color(red: 1.00, green: 0.95, blue: 0.70), // pale yellow
         Color(red: 0.75, green: 0.95, blue: 1.00)  // sky teal
     ]
+    
+    // NEW: Safe helper that never crashes or returns grey
+    static func safeColor(for id: Int) -> Color {
+        if id >= 0 && id < all.count {
+            return all[id]
+        }
+        return .cyan // <--- The "Pretty" Fallback (instead of grey)
+    }
 }
