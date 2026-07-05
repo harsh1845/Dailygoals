@@ -1,0 +1,44 @@
+name: Build DailyGoals IPA
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Build the App (Unsigned)
+        run: |
+          xcodebuild clean build \
+            -project DailyGoals.xcodeproj \
+            -scheme DailyGoals \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            CONFIGURATION_BUILD_DIR="${{ github.workspace }}/build/Release-iphoneos"
+
+      - name: Package into IPA
+        run: |
+          APP_PATH="build/Release-iphoneos/DailyGoals.app"
+          if [ ! -d "$APP_PATH" ]; then
+            echo "App not found at $APP_PATH"
+            find build -name "*.app" -type d
+            exit 1
+          fi
+          mkdir -p Payload
+          cp -r "$APP_PATH" Payload/
+          zip -r DailyGoals.ipa Payload
+          rm -rf Payload
+
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: DailyGoals-App
+          path: DailyGoals.ipa
